@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from app.serializers import LoginSerializer, RegisterSerializer
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
 
 
 def get_tokens_for_user(user):
@@ -16,9 +17,11 @@ def get_tokens_for_user(user):
     }
 
 
+@swagger_auto_schema(method="post", request_body=LoginSerializer, responses={200: "OK"})
 @api_view(["POST"])
 def login_view(request):
     serializer = LoginSerializer(data=request.data)
+    print(request.data)
     if serializer.is_valid():
         email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
@@ -32,6 +35,11 @@ def login_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method="post",
+    request_body=RegisterSerializer,
+    responses={201: "Created"},
+)
 @api_view(["POST"])
 def register_view(request):
     serializer = RegisterSerializer(data=request.data)
@@ -43,6 +51,7 @@ def register_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(method="get", responses={200: "OK"})
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def protected_view(request, format=None):
