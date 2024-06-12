@@ -18,11 +18,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-    def validate_email(self, value):
-        if CustomUser.objects.filter(email=value).exists():
-            return serializers.ValidationError("user with email already exists")
-        return value
-
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()

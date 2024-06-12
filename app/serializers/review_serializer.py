@@ -13,9 +13,7 @@ class ReviewSerializer(serializers.Serializer):
             (5, "5 stars"),
         ]
     )
-    reviewed_by = serializers.PrimaryKeyRelatedField(
-        queryset=CustomUser.objects.all(), allow_null=True
-    )
+    reviewed_by = serializers.PrimaryKeyRelatedField(read_only=True)
     book_reviewed = serializers.PrimaryKeyRelatedField(queryset=Book.objects.all())
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
@@ -34,3 +32,11 @@ class ReviewSerializer(serializers.Serializer):
         )
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        """remove the selected fields from the response"""
+        representation = super().to_representation(instance)
+        representation.pop("created_at", None)
+        representation.pop("updated_at", None)
+        representation.pop("reviewed_by", None)
+        return representation
